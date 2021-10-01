@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftUIWebView",
+        "repositoryURL": "https://github.com/globulus/swiftui-webview",
+        "state": {
+          "branch": null,
+          "revision": "9ce557389ffabfbd1947556fcf874e0f299336b7",
+          "version": "1.0.3"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
