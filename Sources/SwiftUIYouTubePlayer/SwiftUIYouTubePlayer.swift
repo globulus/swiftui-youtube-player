@@ -97,7 +97,6 @@ public struct YouTubePlayer: View {
     private static let webViewConfig = WebViewConfig(javaScriptEnabled: true,
                                                      allowsBackForwardNavigationGestures: false,
                                                      allowsInlineMediaPlayback: true,
-                                                     mediaPlaybackRequiresUserAction: false,
                                                      isScrollEnabled: false,
                                                      isOpaque: true,
                                                      backgroundColor: .clear)
