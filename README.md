@@ -104,4 +104,5 @@ For a more detailed description of the code, [visit this recipe](https://swiftui
 
 ## Changelog
 
+* 1.0.1 - Update to work with SwiftUIWebView 1.0.5.
 * 1.0.0 - Initial release.
