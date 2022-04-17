@@ -1,8 +1,6 @@
 import SwiftUI
 import SwiftUIWebView
 
-typealias YouTubePlayerParams = [String: AnyObject]
-
 /** Embed and control YouTube videos */
 public struct YouTubePlayer: View {
     
