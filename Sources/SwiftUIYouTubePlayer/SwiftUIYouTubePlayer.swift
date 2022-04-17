@@ -59,7 +59,7 @@ public struct YouTubePlayer: View {
     
     @State private var webViewAction = WebViewAction.idle
     @State private var webViewState = WebViewState.empty
-    @State private var playerVars: YouTubePlayerParams = [:]
+    @State private var playerVars: YouTubePlayerConfig
     
     public init(
         action: Binding<YouTubePlayerAction>,
@@ -68,10 +68,7 @@ public struct YouTubePlayer: View {
     ) {
         _action = action
         _state = state
-        playerVars = ["playsinline": config.playInline ? "1" : "0",
-                      "controls":  config.allowControls ? "1" : "0",
-                      "showinfo":  config.showInfo ? "1" : "0"
-        ] as YouTubePlayerParams
+        _playerVars = State(initialValue: config)
     }
 
     public var body: some View {
@@ -102,9 +99,10 @@ public struct YouTubePlayer: View {
             loadVideo(id: id)
         case .loadPlaylistID(let id):
             // No videoId necessary when listType = playlist, list = [playlist Id]
-            playerVars["listType"] = "playlist" as AnyObject?
-            playerVars["list"] = id as AnyObject?
-            loadWebViewWithParameters(defaultPlayerParams)
+            playerVars.listType = "playlist"
+            playerVars.list = id
+            let params = YouTubePlayerParameters(playerVars: playerVars)
+            loadWebViewWithParameters(params)
         case .mute:
             evaluatePlayerCommand("mute()")
         case .unmute:
@@ -150,8 +148,10 @@ public struct YouTubePlayer: View {
     }
     
     private func loadVideo(id: String) {
-        var params = defaultPlayerParams
-        params["videoId"] = id as AnyObject?
+        let params = YouTubePlayerParameters(
+            playerVars: playerVars,
+            videoId: id
+        )
         loadWebViewWithParameters(params)
     }
 
@@ -172,34 +172,16 @@ public struct YouTubePlayer: View {
     }
 
     // MARK: Player setup
-    private func loadWebViewWithParameters(_ parameters: YouTubePlayerParams) {
+    private func loadWebViewWithParameters(_ parameters: YouTubePlayerParameters) {
         let rawHTMLString = YouTubePlayer.playerHTML
         // Get JSON serialized parameters string
-        let jsonParameters = "{\n\"width\":\"100%\",\n\"height\":\"100%\",\n\"playerVars\":{\n\"playsinline\":0,\n\"controls\":0,\n\"showinfo\":0\n},\n\"events\":{\n\"onPlaybackQualityChange\":\"onPlaybackQualityChange\",\n\"onStateChange\":\"onStateChange\",\n\"onReady\":\"onReady\",\n\"onError\":\"onPlayerError\"\n},\n\"videoId\":\"dQw4w9WgXcQ\"\n}"
-        //serializedJSON(parameters as AnyObject)!
+        let encoder = JSONEncoder()
+        let jsonData = try! encoder.encode(parameters)
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
         // Replace %@ in rawHTMLString with jsonParameters string
-        let htmlString = rawHTMLString.replacingOccurrences(of: "%@", with: jsonParameters)
+        let htmlString = rawHTMLString.replacingOccurrences(of: "%@", with: jsonStr)
         // Load HTML in web view
         webViewAction = .loadHTML(htmlString)
-    }
-
-    // MARK: Player parameters and defaults
-    private var defaultPlayerParams: YouTubePlayerParams {
-        [
-            "height": "100%" as AnyObject,
-            "width": "100%" as AnyObject,
-            "events": playerCallbacks as AnyObject,
-            "playerVars": playerVars as AnyObject
-        ]
-    }
-    
-    private var playerCallbacks: YouTubePlayerParams {
-        [
-            "onReady": "onReady" as AnyObject,
-            "onStateChange": "onStateChange" as AnyObject,
-            "onPlaybackQualityChange": "onPlaybackQualityChange" as AnyObject,
-            "onError": "onPlayerError" as AnyObject
-        ]
     }
 
     private func serializedJSON(_ object: AnyObject) -> String? {
@@ -284,7 +266,7 @@ struct YouTubeTest: View {
                     action = .next
                 }
             }
-            YouTubePlayer(action: $action, state: $state)
+            YouTubePlayer(action: $action, state: $state, config: .init(playInline: false))
                 .aspectRatio(16/9, contentMode: .fit)
             Spacer()
         }
