@@ -256,7 +256,8 @@ public struct YouTubePlayer: View {
     private func loadWebViewWithParameters(_ parameters: YouTubePlayerParams) {
         let rawHTMLString = YouTubePlayer.playerHTML
         // Get JSON serialized parameters string
-        let jsonParameters = serializedJSON(parameters as AnyObject)!
+        let jsonParameters = "{\n\"width\":\"100%\",\n\"height\":\"100%\",\n\"playerVars\":{\n\"playsinline\":0,\n\"controls\":0,\n\"showinfo\":0\n},\n\"events\":{\n\"onPlaybackQualityChange\":\"onPlaybackQualityChange\",\n\"onStateChange\":\"onStateChange\",\n\"onReady\":\"onReady\",\n\"onError\":\"onPlayerError\"\n},\n\"videoId\":\"dQw4w9WgXcQ\"\n}"
+        //serializedJSON(parameters as AnyObject)!
         // Replace %@ in rawHTMLString with jsonParameters string
         let htmlString = rawHTMLString.replacingOccurrences(of: "%@", with: jsonParameters)
         // Load HTML in web view
@@ -395,6 +396,7 @@ struct YouTubeTest: View {
                 }
             }
             YouTubePlayer(action: $action, state: $state)
+                .aspectRatio(16/9, contentMode: .fit)
             Spacer()
         }
     }
