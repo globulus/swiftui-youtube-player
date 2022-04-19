@@ -15,13 +15,12 @@ public struct YouTubePlayerConfig: Encodable {
         self.showInfo = showInfo
     }
     
-    public static var `default`: Self {
-        .init(
-            playInline: true,
-            allowControls: false,
-            showInfo: false
-        )
-    }
+    public static let `default`: Self = .init(
+        playInline: true,
+        allowControls: false,
+        showInfo: false
+    )
+        
     
     enum CodingKeys: String, CodingKey {
         case playInline = "playsinline"

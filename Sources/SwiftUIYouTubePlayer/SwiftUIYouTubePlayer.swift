@@ -264,7 +264,7 @@ struct YouTubeTest: View {
                     action = .next
                 }
             }
-            YouTubePlayer(action: $action, state: $state, config: .init(playInline: false))
+            YouTubePlayer(action: $action, state: $state, config: .init(playInline: true))
                 .aspectRatio(16/9, contentMode: .fit)
             Spacer()
         }
